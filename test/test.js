@@ -1,6 +1,7 @@
 
 'use strict';
 
+const expect = require("expect");
 const request = require('supertest');
 const Koa = require('koa');
 const R = require('response-objects');
@@ -17,7 +18,6 @@ const route = require('..');
 methods.forEach(function(method){
   const app = new Koa();
   app.use(route[method]('/:user(tj)', function(ctx, params){
-    console.log("got here!", method, params);
     return R.Ok(params.user);
   }))
 
@@ -155,7 +155,7 @@ describe('route params', function(){
     const app = new Koa();
 
     app.use(route.get('/package/:name', function (ctx, {name}) {
-      name.should.equal('http://github.com/component/tip');
+      expect(name).toBe('http://github.com/component/tip');
       done();
     }));
 
@@ -168,8 +168,8 @@ describe('route params', function(){
     const app = new Koa();
 
     app.use(route.get('/api/:resource/:id?', function (ctx, {resource, id}) {
-      resource.should.equal('users');
-      (id == null).should.be.true;
+      expect(resource).toBe('users');
+      expect(id).toNotExist();
       done();
     }));
 
@@ -182,8 +182,8 @@ describe('route params', function(){
     const app = new Koa();
 
     app.use(route.get('/api/:resource/:id', function (ctx, {resource, id}) {
-      resource.should.equal('users');
-      id.should.equal('1')
+      expect(resource).toBe('users');
+      expect(id).toBe('1')
       done();
     }, { end: false }));
 
@@ -198,7 +198,7 @@ describe('routePath is added to ctx', function(){
     const app = new Koa();
 
     app.use(route.get('/tj/:var', function (ctx, name){
-      ctx.routePath.should.equal('/tj/:var');
+      expect(ctx.routePath).toEqual('/tj/:var');
       done();
     }));
 

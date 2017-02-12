@@ -54,6 +54,7 @@ function create (method) {
 }
 
 function decodeParam (val) {
+  if (val == null) return val;
   try {
     return decodeURIComponent(val);
   } catch (err) {
@@ -97,14 +98,10 @@ function getParams (re, path) {
     return null;
   }
 
+  const {keys} = re;
   const matches = re.exec(path).slice(1);
   return matches.reduce((params, match, index) => {
-    const key = re.keys[index];
-    const prop = key.name;
-    const val = decodeParam(match);
-    if (val !== undefined) {
-      params[prop] = val;
-    }
+    params[keys[index].name] = decodeParam(match);
     return params;
   }, {});
 }
