@@ -3,6 +3,7 @@
 
 const request = require('supertest');
 const Koa = require('koa');
+const R = require('response-objects');
 
 const methods = require('methods').map(function(method){
   // normalize method names for tests
@@ -15,8 +16,9 @@ const route = require('..');
 
 methods.forEach(function(method){
   const app = new Koa();
-  app.use(route[method]('/:user(tj)', function(ctx, user){
-    ctx.body = user;
+  app.use(route[method]('/:user(tj)', function(ctx, params){
+    console.log("got here!", method, params);
+    return R.Ok(params.user);
   }))
 
   describe('route.' + method + '()', function(){
@@ -49,8 +51,8 @@ methods.forEach(function(method){
 
 methods.forEach(function(method){
   const app = new Koa();
-  app.use(route[method]('/:user(tj)')(function(ctx, user){
-    ctx.body = user;
+  app.use(route[method]('/:user(tj)')(function(ctx, {user}){
+    return R.Ok(user);
   }))
 
   describe('composed: route.' + method + '()', function(){
@@ -86,8 +88,8 @@ describe('route.all()', function(){
   describe('should work with', function(){
     methods.forEach(function(method){
       const app = new Koa();
-      app.use(route.all('/:user(tj)', function(ctx, user){
-        ctx.body = user;
+      app.use(route.all('/:user(tj)', function(ctx, {user}){
+        return R.Ok(user);
       }))
 
       it(method, function(done){
@@ -102,8 +104,8 @@ describe('route.all()', function(){
   describe('when patch does not match', function(){
     it('should 404', function (done){
       const app = new Koa();
-      app.use(route.all('/:user(tj)', function(ctx, user){
-        ctx.body = user;
+      app.use(route.all('/:user(tj)', function(ctx, {user}){
+        return R.Ok(user);
       }))
 
       request(app.listen())
@@ -117,20 +119,19 @@ describe('route params', function(){
   methods.forEach(function(method){
     const app = new Koa();
 
-    app.use(route[method]('/:user(tj)', function(ctx, user, next){
-      return next();
+    // app.use(route[method]('/:user(tj)', function(ctx, {user}, next) {
+    //   return next();
+    // }))
+    //
+    // app.use(route[method]('/:user(tj)', function (ctx, {user}, next) {
+    //   return R.Ok(user);
+    // }))
+
+    app.use(route[method]('/:user(tj)', function (ctx, {user}, next) {
+      return R.Created('tj');
     }))
 
-    app.use(route[method]('/:user(tj)', function(ctx, user, next){
-      ctx.body = user;
-      return next();
-    }))
-
-    app.use(route[method]('/:user(tj)', function(ctx, user, next){
-      ctx.status = 201;
-    }))
-
-    it('should work with method ' + method, function(done){
+    it('should work with method ' + method, function (done) {
       request(app.listen())
         [method]('/tj')
         .expect(201)
@@ -138,11 +139,11 @@ describe('route params', function(){
     })
   })
 
-  it('should work with method head when get is defined', function(done){
+  it('should work with method head when get is defined', function (done) {
     const app = new Koa();
 
-    app.use(route.get('/tj', function (ctx, name){
-      ctx.body = 'foo';
+    app.use(route.get('/tj', function (ctx, {name}) {
+      return R.Ok('foo')
     }));
 
     request(app.listen())
@@ -150,23 +151,23 @@ describe('route params', function(){
     .expect(200, done)
   })
 
-  it('should be decoded', function(done){
+  it('should be decoded', function (done) {
     const app = new Koa();
 
-    app.use(route.get('/package/:name', function (ctx, name){
+    app.use(route.get('/package/:name', function (ctx, {name}) {
       name.should.equal('http://github.com/component/tip');
       done();
     }));
 
     request(app.listen())
     .get('/package/' + encodeURIComponent('http://github.com/component/tip'))
-    .end(function(){});
+    .end(function () {});
   })
 
-  it('should be null if not matched', function(done){
+  it('should be null if not matched', function (done) {
     const app = new Koa();
 
-    app.use(route.get('/api/:resource/:id?', function (ctx, resource, id){
+    app.use(route.get('/api/:resource/:id?', function (ctx, {resource, id}) {
       resource.should.equal('users');
       (id == null).should.be.true;
       done();
@@ -177,10 +178,10 @@ describe('route params', function(){
     .end(function(){});
   })
 
-  it('should use the given options', function(done){
+  it('should use the given options', function (done) {
     const app = new Koa();
 
-    app.use(route.get('/api/:resource/:id', function (ctx, resource, id){
+    app.use(route.get('/api/:resource/:id', function (ctx, {resource, id}) {
       resource.should.equal('users');
       id.should.equal('1')
       done();

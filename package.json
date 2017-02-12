@@ -23,8 +23,12 @@
   "license": "MIT",
   "dependencies": {
     "debug": "*",
+    "koa-detour-addons": "^1.0.0",
     "methods": "~1.1.0",
-    "path-to-regexp": "^1.2.0"
+    "p-try": "^1.0.0",
+    "path-to-regexp": "^1.2.0",
+    "response-objects": "^0.2.0",
+    "should": "^11.2.0"
   },
   "scripts": {
     "test": "NODE_ENV=test mocha --harmony --require should --reporter spec",
