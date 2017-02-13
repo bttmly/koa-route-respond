@@ -12,7 +12,7 @@ const R = require('response-objects');
 const pTry = require('p-try');
 const { respond } = require('koa-detour-addons');
 
-methods.forEach(function(method){
+methods.forEach(function (method) {
   exports[method] = create(method);
 });
 
@@ -31,7 +31,7 @@ function create (method) {
     debug('%s %s -> %s', method || 'ALL', path, re);
 
     function createRoute (routeFn) {
-      return function (ctx, next){
+      return function (ctx, next) {
         // method
         if (!matches(ctx, method)) return next();
 
@@ -94,13 +94,14 @@ function matches(ctx, method) {
 }
 
 function getParams (re, path) {
-  if (!re.test(path)) {
+  const matches = re.exec(path);
+
+  if (matches == null) {
     return null;
   }
 
   const {keys} = re;
-  const matches = re.exec(path).slice(1);
-  return matches.reduce((params, match, index) => {
+  return matches.slice(1).reduce((params, match, index) => {
     params[keys[index].name] = decodeParam(match);
     return params;
   }, {});

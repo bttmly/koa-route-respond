@@ -2,7 +2,7 @@
   "name": "koa-route-respond",
   "description": "Koa route middleware",
   "repository": "nickb1080/koa-route-respond",
-  "version": "3.2.0",
+  "version": "1.0.0",
   "keywords": [
     "koa",
     "middleware",
@@ -28,12 +28,11 @@
     "methods": "~1.1.0",
     "p-try": "^1.0.0",
     "path-to-regexp": "^1.2.0",
-    "response-objects": "^0.2.0",
-    "should": "^11.2.0"
+    "response-objects": "^0.2.0"
   },
   "scripts": {
-    "test": "NODE_ENV=test mocha --harmony --require should --reporter spec",
-    "test-cov": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
-    "test-travis": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
+    "test": "NODE_ENV=test mocha --reporter spec",
+    "test-cov": "NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
+    "test-travis": "NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
   }
 }
