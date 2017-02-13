@@ -33,13 +33,13 @@ const db = {
 const pets = {
   list (ctx) {
     const names = Object.keys(db);
-    return R.Ok(`pets: ${names.join(', ')}`);
+    return Ok(`pets: ${names.join(', ')}`);
   },
 
   show (ctx, {name}) {
     const pet = db[name];
-    if (!pet) throw R.NotFound('cannot find that pet');
-    return R.Ok(`${pet.name} is a ${pet.species}`);
+    if (!pet) throw NotFound('cannot find that pet');
+    return Ok(`${pet.name} is a ${pet.species}`);
   },
 };
 
