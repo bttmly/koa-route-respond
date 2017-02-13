@@ -1,8 +1,8 @@
 {
-  "name": "koa-route",
+  "name": "koa-route-respond",
   "description": "Koa route middleware",
-  "repository": "koajs/route",
-  "version": "2.4.2",
+  "repository": "nickb1080/koa-route-respond",
+  "version": "1.0.0",
   "keywords": [
     "koa",
     "middleware",
@@ -15,7 +15,7 @@
   ],
   "devDependencies": {
     "istanbul-harmony": "0",
-    "koa": "0",
+    "koa": "^2.0.0-alpha.3",
     "mocha": "^2.2.5",
     "should": "*",
     "supertest": "0"
@@ -23,12 +23,16 @@
   "license": "MIT",
   "dependencies": {
     "debug": "*",
+    "expect": "^1.20.2",
+    "koa-detour-addons": "^1.0.0",
     "methods": "~1.1.0",
-    "path-to-regexp": "^1.2.0"
+    "p-try": "^1.0.0",
+    "path-to-regexp": "^1.2.0",
+    "response-objects": "^0.2.0"
   },
   "scripts": {
-    "test": "NODE_ENV=test mocha --harmony --require should --reporter spec",
-    "test-cov": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
-    "test-travis": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
+    "test": "NODE_ENV=test mocha --reporter spec",
+    "test-cov": "NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
+    "test-travis": "NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
   }
 }

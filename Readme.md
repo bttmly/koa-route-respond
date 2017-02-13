@@ -1,20 +1,17 @@
 # koa-route
 
- Uber simple route middleware for koa.
+ Route middleware for Koa with [response object](https://github.com/nickb1080/response-objects) support.
 
 ```js
-var _ = require('koa-route');
-app.use(_.get('/pets', pets.list));
-app.use(_.get('/pets/:name', pets.show));
+const r = require('koa-route-respond');
+app.use(r.get('/pets', pets.list));
+app.use(r.get('/pets/:name', pets.show));
 ```
-
- If you need a full-featured solution check out [koa-router](https://github.com/alexmingoia/koa-router),
- a Koa clone of express-resource.
 
 ## Installation
 
-```js
-$ npm install koa-route
+```
+$ npm install koa-route-respond
 ```
 
 ## Example
@@ -22,34 +19,33 @@ $ npm install koa-route
   Contrived resource-oriented example:
 
 ```js
-var _ = require('koa-route');
-var koa = require('koa');
-var app = koa();
+const r = require('koa-route');
+const { Ok, NotFound } = require('response-objects');
+const Koa = require('koa');
+const app = new Koa();
 
-var db = {
+const db = {
   tobi: { name: 'tobi', species: 'ferret' },
   loki: { name: 'loki', species: 'ferret' },
-  jane: { name: 'jane', species: 'ferret' }
+  jane: { name: 'jane', species: 'ferret' },
 };
 
-var pets = {
-  list: function *(){
-    var names = Object.keys(db);
-    this.body = 'pets: ' + names.join(', ');
+const pets = {
+  list (ctx) {
+    const names = Object.keys(db);
+    return R.Ok(`pets: ${names.join(', ')}`);
   },
 
-  show: function *(name){
-    var pet = db[name];
-    if (!pet) return this.throw('cannot find that pet', 404);
-    this.body = pet.name + ' is a ' + pet.species;
-  }
+  show (ctx, {name}) {
+    const pet = db[name];
+    if (!pet) throw R.NotFound('cannot find that pet');
+    return R.Ok(`${pet.name} is a ${pet.species}`);
+  },
 };
 
-app.use(_.get('/pets', pets.list));
-app.use(_.get('/pets/:name', pets.show));
-
+app.use(r.get('/pets', pets.list));
+app.use(r.get('/pets/:name', pets.show));
 app.listen(3000);
-console.log('listening on port 3000');
 ```
 
 ## License

@@ -1,31 +1,30 @@
-
 'use strict';
 
-var r = require('./');
-var koa = require('koa');
-var app = koa();
+const { get } = require('./');
+const { Ok, NotFound } = require('response-objects');
 
-var db = {
+const Koa = require('koa');
+const app = new Koa();
+
+const db = {
   tobi: { name: 'tobi', species: 'ferret' },
   loki: { name: 'loki', species: 'ferret' },
   jane: { name: 'jane', species: 'ferret' }
 };
 
-var pets = {
-  list: function *(){
-    var names = Object.keys(db);
-    this.body = 'pets: ' + names.join(', ');
+const pets = {
+  list (ctx) {
+    const names = Object.keys(db);
+    return Ok(`pets: ${names.joing(', ')}`);
   },
 
-  show: function *(name){
-    var pet = db[name];
-    if (!pet) return this.throw('cannot find that pet', 404);
-    this.body = pet.name + ' is a ' + pet.species;
+  show (ctx, {name}) {
+    const pet = db[name];
+    if (!pet) throw NotFound('cannot find that pet');
+    return Ok(`${pet.name} is a ${pet.species}`);
   }
 };
 
-app.use(r.get('/pets', pets.list));
-app.use(r.get('/pets/:name', pets.show));
-
+app.use(get('/pets', pets.list));
+app.use(get('/pets/:name', pets.show));
 app.listen(3000);
-console.log('listening on port 3000');
