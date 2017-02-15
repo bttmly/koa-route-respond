@@ -17,13 +17,12 @@
     "istanbul-harmony": "0",
     "koa": "^2.0.0-alpha.3",
     "mocha": "^2.2.5",
-    "should": "*",
+    "expect": "^1.20.2",
     "supertest": "0"
   },
   "license": "MIT",
   "dependencies": {
     "debug": "*",
-    "expect": "^1.20.2",
     "koa-detour-addons": "^1.0.0",
     "methods": "~1.1.0",
     "p-try": "^1.0.0",
@@ -31,8 +30,6 @@
     "response-objects": "^0.2.0"
   },
   "scripts": {
-    "test": "NODE_ENV=test mocha --reporter spec",
-    "test-cov": "NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
-    "test-travis": "NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
+    "test": "NODE_ENV=test mocha"
   }
 }

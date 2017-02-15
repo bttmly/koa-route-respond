@@ -1,6 +1,6 @@
 # koa-route-respond
 
- Route middleware for Koa with [response object](https://github.com/nickb1080/response-objects) support.
+ Route middleware for Koa with [response object](https://github.com/nickb1080/response-objects) support. Fork of [koa-route](https://github.com/koajs/route).
 
 ```js
 const r = require('koa-route-respond');
