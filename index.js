@@ -12,46 +12,66 @@ const R = require('response-objects');
 const pTry = require('p-try');
 const { respond } = require('koa-detour-addons');
 
-methods.forEach(function (method) {
-  exports[method] = create(method);
-});
+function _libInit () {
+  const exports = {
+    getNewLibraryCopy: _libInit,
+  };
 
-exports.del = exports.delete;
-exports.all = create();
+  methods.forEach(function (method) {
+    exports[method] = create(method);
+  });
 
-const respondThen = respond.makeRespondSuccess({ responder });
-const respondCatch = respond.makeRespondError({ responder });
+  exports.del = exports.delete;
+  exports.all = create();
 
-function create (method) {
-  if (method) method = method.toUpperCase();
+  const respondThen = respond.makeRespondSuccess({ responder });
+  const respondCatch = respond.makeRespondError({ responder });
 
-  return function (path, fn, opts) {
-    const keys = [];
-    const re = pathToRegexp(path, keys, opts);
-    debug('%s %s -> %s', method || 'ALL', path, re);
+  function create (method) {
+    if (method) method = method.toUpperCase();
 
-    function createRoute (routeFn) {
-      return function (ctx, next) {
-        // method
-        if (!matches(ctx, method)) return next();
+    return function (path, fn, opts) {
+      const re = pathToRegexp(path, opts);
+      debug('%s %s -> %s', method || 'ALL', path, re);
 
-        const params = getParams(re, ctx.path);
-        if (params) {
-          ctx.routePath = path;
-          debug('%s %s matches %s %j', ctx.method, path, ctx.path, params);
-          return pTry(() => routeFn.call(ctx, ctx, params))
-            .then(result => respondThen(ctx, result))
-            .catch(err => respondCatch(ctx, err));
-        }
+      function createRoute (routeFn) {
+        return function (ctx, next) {
+          // method
+          if (!matches(ctx, method)) return next();
 
-        // miss
-        return next();
-      };
+          const params = getParams(re, ctx.path);
+          if (params) {
+            ctx.routePath = path;
+            debug('%s %s matches %s %j', ctx.method, path, ctx.path, params);
+            return pTry(() => routeFn.call(ctx, ctx, params))
+              .then(result => respondThen(ctx, result))
+              .catch(err => respondCatch(ctx, err));
+          }
+
+          // miss
+          return next();
+        };
+      }
+
+      return fn ? createRoute(fn) : createRoute;
     }
-
-    return fn ? createRoute(fn) : createRoute;
   }
+
+  exports.setResponder = r => { _responder = r; };
+
+  // a little bit of indirection so we can set the responder
+  // after installing routes into the application
+  let _responder;
+  function responder (resp, ctx) {
+    return _responder ?
+      _responder(resp, ctx) :
+      defaultResponder(resp, ctx);
+  }
+
+  return exports;
 }
+
+module.exports = _libInit();
 
 function decodeParam (val) {
   if (val == null) return val;
@@ -73,17 +93,6 @@ function defaultResponder (resp, ctx) {
   Object.keys(resp.headers).forEach(function (h) {
     ctx.set(h, resp.headers[h]);
   });
-}
-
-let _responder;
-exports.setResponder = r => { _responder = r; };
-
-// a little bit of indirection so we can set the responder
-// after installing routes into the application
-function responder (resp, ctx) {
-  return _responder ?
-    _responder(resp, ctx) :
-    defaultResponder(resp, ctx);
 }
 
 function matches(ctx, method) {
