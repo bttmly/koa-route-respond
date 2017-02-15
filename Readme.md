@@ -1,4 +1,4 @@
-# koa-route
+# koa-route-respond
 
  Route middleware for Koa with [response object](https://github.com/nickb1080/response-objects) support.
 
